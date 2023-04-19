@@ -1,0 +1,87 @@
+.articles {
+    background: $header-articles-bcg;
+    padding-bottom: 8em;
+
+    &__heading {
+        padding-top: 4em;
+    }
+
+    &-wrapper {
+        grid-template-columns: repeat(4, 1fr);
+        margin: 2em 0;
+    }
+}
+
+
+.article {
+    width: 90%;
+    background: $white;
+    margin: 2em auto;
+    border-radius: 5px;
+
+    &__autor,
+    &__heading,
+    &__subtitle {
+        text-align: left;
+        margin: 0 2rem 0 2.5rem;
+    }
+
+    &__autor {
+        margin: 1.5em 0 .5em 2.5rem;
+    }
+
+    &__heading {
+        margin-bottom: .5em;
+    }
+
+    &__subtitle {
+        padding-bottom: 3em;
+        line-height: 1.4em;
+    }
+
+    img {
+        object-fit: cover;
+        width: 100%;
+        border-radius: 5px;
+        height: 200px;
+    }
+}
+
+
+@media(min-width: 700px) {
+    .articles-wrapper {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+
+    }
+}
+
+@media(min-width: 1024px) {
+    .articles-wrapper {
+        grid-template-columns: repeat(4, 1fr);
+        margin: 2em 8.5rem;
+    }
+
+    .articles__heading {
+        margin-left: 8.5rem;
+        padding-top: 2em;
+    }
+
+    .article {
+        width: 90%;
+        background: $white;
+        margin: 0;
+
+        img {
+            object-fit: cover;
+            width: 100%;
+            border-radius: 5px;
+            height: 200px;
+        }
+
+        .--normal {
+            height: 200px;
+        }
+
+    }
+}
