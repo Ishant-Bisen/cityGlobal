@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link ,Navigate, useNavigate } from "react-router-dom";
 
 export default function UserList() {
   const [isEditing, setIsEditing] = useState(false);
@@ -11,9 +11,7 @@ export default function UserList() {
   const [res, setRes] = useState("");
   const [text, setText] = useState("Enter text here");
   const [text2, setText2] = useState("Enter text here");
-  const [checkbutton, setcheckbutton] = useState([]);
-  const [allwithdraw, setallwithdraw] = useState([])
-  
+  const navigate = useNavigate()
 
   const handellogout = () => {
     localStorage.removeItem("auth-token");
@@ -24,8 +22,7 @@ export default function UserList() {
   }
 
   async function handleEndEditing(email) {
-    console.log(value);
-    console.log(email);
+    
 
     if (isNaN(value)) {
       alert(`${value} is not numeric`);
@@ -60,7 +57,7 @@ export default function UserList() {
   }
 
   async function handleEndEditing2(email) {
-    console.log(email, value2);
+  
     if (isNaN(value2)) {
       alert(`${value2} is not numeric`);
     } else {
@@ -100,14 +97,36 @@ export default function UserList() {
   const [getAll, setgetAll] = useState([]);
   const [bankDetail, setbankDetail] = useState([]);
   const [allEmail, setEmail] = useState([]);
-  const [withdraw, setwithdraw] = useState([]);
   const [loading, setLoading] = useState(true);
   const [benelists, setbenelists] = useState([]);
+  const [balancestatus, setbalancestatus] = useState([])
+  
+  async function balance(email){
+    
+    fetch("https://nidhibackend.onrender.com/admin/getBalanceStatus", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem("auth-token"),
+      },
+      body: JSON.stringify({
+        "email" : email
+      }),
+    })
+      .then((Response) => Response.json())
+      .then((data) => {
+        setbalancestatus(data);
+      });
+  }
+
+
+
+
 
   async function block(email) {
     // Receive email as parameter
       
-    console.log("block" + email);
+    
     try {
       const response = await fetch(
         "https://nidhibackend.onrender.com/admin/blockUser",
@@ -123,16 +142,16 @@ export default function UserList() {
         }
       );
       const data = await response.json();
-      console.log(data);
+    
       alert("User has been Blocked");
     } catch (error) {
       console.error("Error:", error);
     }
   }
-  async function getbeneficiary(userid) {
+  async function getbeneficiary(email) {
     // Receive email as parameter
 
-    console.log("beneemail" + userid);
+    
     try {
       const response = await fetch(
         "https://nidhibackend.onrender.com/admin/getBeneficiaries",
@@ -143,46 +162,23 @@ export default function UserList() {
             "auth-token": localStorage.getItem("auth-token"),
           },
           body: JSON.stringify({
-            "userId": userid
+            "email": email
           }),
         }
       );
       const data = await response.json();
-      console.log(data);
+      
       setbenelists(data);
     } catch (error) {
       console.error("Error:", error);
     }
   }
 
-  async function withdrawreq(userid) {
-    // Receive email as parameter
-    try {
-      console.log(userid);
-      const response = await fetch(
-        "https://nidhibackend.onrender.com/admin/handleWithdrawRequest",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "auth-token": localStorage.getItem("auth-token"),
-          },
-          body: JSON.stringify({
-            "userId": userid
-          }),
-        }
-      );
-      const data = await response.json();
-
-      console.log(data);
-
-      setcheckbutton(data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  }
 
   useEffect(() => {
+    if(!localStorage.getItem("auth-token")){
+      navigate("/")
+    }
     async function runfxn() {
       try {
         const response = await fetch(
@@ -200,9 +196,9 @@ export default function UserList() {
         setgetAll(data);
 
         data.forEach((item) => {
-          console.log(item);
+          
           bankdetails(item.email);
-          AllWithdrawRequest(item._id, item.email, item.username);
+          
         });
 
         // Pass email as parameter to bankdetails
@@ -228,6 +224,7 @@ export default function UserList() {
           }
         );
         const data = await response.json();
+        
 
         let data2 = { ...data, email: email };
 
@@ -239,35 +236,12 @@ export default function UserList() {
       }
     }
 
-    async function AllWithdrawRequest(userid, email, username) {
-      // Receive email as parameter
-      try {
-        console.log(userid);
-        const response = await fetch(
-          "https://nidhibackend.onrender.com/admin/getAllRequests",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": localStorage.getItem("auth-token"),
-            },
-          }
-        );
-        const data = await response.json();
-
-        
-
-       setallwithdraw(data)
-        console.log("req", data);
-      } catch (error) {
-        console.log("Error:", error);
-      }
-    }
+    
 
     // Run the effect only once when the component mounts
     runfxn();
-    console.log(allEmail)
-    console.log(bankDetail);
+    
+    
   }, []);
 
   // Use a separate effect to update the email state when bankDetail changes
@@ -634,7 +608,7 @@ export default function UserList() {
                                 <th>Bank Details</th>
                                 <th>Balance Status</th>
                                 <th>Beneficiary Status</th>
-                                
+
                                 <th>Block User</th>
                               </tr>
                             </thead>
@@ -648,7 +622,9 @@ export default function UserList() {
                                 >
                                   <td>
                                     <i className="fab fa-sketch fa-lg text-warning me-3"></i>
-                                    <strong>21/01/2023</strong>
+                                    <strong>
+                                        {index+1}
+                                    </strong>
                                   </td>
                                   <td>{item.username}</td>
                                   <td>
@@ -661,7 +637,7 @@ export default function UserList() {
                                       className="btn btn-primary"
                                       data-toggle="modal"
                                       data-target={
-                                        `#exampleModal` + item.username
+                                        `#exampleModal` + index
                                       }
                                     >
                                       User Details
@@ -670,7 +646,7 @@ export default function UserList() {
                                     {/* <!-- Modal --> */}
                                     <div
                                       className="modal fade"
-                                      id={`exampleModal` + item.username}
+                                      id={`exampleModal` + index}
                                       tabindex="-1"
                                       role="dialog"
                                       aria-labelledby="exampleModalLabel"
@@ -709,7 +685,7 @@ export default function UserList() {
                                                   >
                                                     Account Holder’s Name
                                                   </label>
-                                                  <h5>{item.username}</h5>
+                                                  <h5>{item.AccHolderName}</h5>
                                                 </div>
                                                 <div className="mb-3 col-md-6">
                                                   <label
@@ -870,8 +846,9 @@ export default function UserList() {
                                       className="btn btn-primary"
                                       data-toggle="modal"
                                       data-target={
-                                        `#exampleModal3` + item.username
+                                        `#exampleModal3` + index
                                       }
+                                      onClick={() => balance(item.email)}
                                     >
                                       Status
                                     </button>
@@ -879,7 +856,7 @@ export default function UserList() {
                                     {/* <!-- Modal --> */}
                                     <div
                                       className="modal fade"
-                                      id={`exampleModal3` + item.username}
+                                      id={`exampleModal3` + index}
                                       tabindex="-1"
                                       role="dialog"
                                       aria-labelledby="exampleModalLabel"
@@ -927,10 +904,10 @@ export default function UserList() {
                                                 style={Color2}
                                                 onInput={handleChange2}
                                               >
-                                                {item.allotedAmt ? (
-                                                  <>{item.allotedAmt}</>
+                                                {balancestatus.alloted ? (
+                                                  <>{balancestatus.alloted}</>
                                                 ) : (
-                                                  <> {text2} </>
+                                                  <> {0} </>
                                                 )}
                                               </p>
                                               {isEditing2 ? (
@@ -971,10 +948,10 @@ export default function UserList() {
                                                 onInput={handleChange}
                                                 class="form-control border-0 shadow-none"
                                               >
-                                                {item.lockedAmt ? (
-                                                  <> {item.lockedAmt} </>
+                                                {balancestatus.locked ? (
+                                                  <> {balancestatus.locked} </>
                                                 ) : (
-                                                  <> {text}</>
+                                                  <> {"0"}</>
                                                 )}
                                               </p>
                                               {isEditing ? (
@@ -1008,7 +985,7 @@ export default function UserList() {
                                               Available to Withdraw
                                             </label>
                                             <p class="form-control border-0 shadow-none">
-                                              {text}
+                                            {balancestatus.available ? (balancestatus.available) : "0"}
                                             </p>
                                           </div>
                                           <div className="mb-3 col-md-6">
@@ -1019,7 +996,7 @@ export default function UserList() {
                                               Disbursed Amount
                                             </label>
                                             <p class="form-control border-0 shadow-none">
-                                              {text}
+                                            {balancestatus.disbursed}
                                             </p>
                                           </div>
                                           </div>
@@ -1050,9 +1027,9 @@ export default function UserList() {
                                       className="btn btn-primary"
                                       data-toggle="modal"
                                       data-target={
-                                        `#exampleModal5` + item.username
+                                        `#exampleModal5` + index
                                       }
-                                      onClick={() => getbeneficiary(item.userId)}
+                                      onClick={() => getbeneficiary(item.email)}
                                     >
                                       Beneficiaries
                                     </button>
@@ -1060,7 +1037,7 @@ export default function UserList() {
                                     {/* <!-- Modal --> */}
                                     <div
                                       className="modal fade"
-                                      id={`exampleModal5` + item.username}
+                                      id={`exampleModal5` + index}
                                       tabindex="-1"
                                       role="dialog"
                                       aria-labelledby="exampleModalLabel3"
@@ -1097,37 +1074,39 @@ export default function UserList() {
                                               <table className="table">
                                                 <thead>
                                                   <tr>
-                                                    <th>Date</th>
+                                                    <th>S.NO</th>
                                                     <th>User Name</th>
                                                     <th>Account Number</th>
                                                     <th>Bank Name</th>
                                                   </tr>
                                                 </thead>
                                                 <tbody className="table-border-bottom-0">
+                                                {benelists.error?  <h3>No Beneficiary Added</h3> : benelists?.map((item , index) =>
                                                   <tr className="table-info">
                                                     <td>
                                                       <i className="fab fa-sketch fa-lg text-warning me-3"></i>
                                                       <strong>
-                                                        ----
+                                                        {index+1}
                                                       </strong>
                                                     </td>
                                                     <td>
                                                       {
-                                                        benelists.BeneficiaryName
+                                                        item.BeneficiaryName
                                                       }
                                                     </td>
                                                     <td>
                                                       <strong>
-                                                        {benelists.AccountNo}
+                                                        {item.AccountNo}
                                                       </strong>
                                                     </td>
                                                     <td>
                                                       <strong>
-                                                        {" "}
-                                                        {benelists.BankName}
+                                                        
+                                                        {item.BankName}
                                                       </strong>
                                                     </td>
                                                   </tr>
+                                                )}
                                                 </tbody>
                                               </table>
                                             </div>

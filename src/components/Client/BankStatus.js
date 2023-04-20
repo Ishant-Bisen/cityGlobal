@@ -35,8 +35,11 @@ export default function BankStatus() {
         .then((data) => {
           if (data.error) {
             alert(data.error);
+            
+          }else{
+            alert("Withdraw Request Successfully Sent")
           }
-          console.log(data);
+          
         })
         .catch((error) => {
           alert();
@@ -49,9 +52,7 @@ export default function BankStatus() {
 
   useEffect(() => {
     const token = localStorage.getItem("user-auth-token");
-    console.log(localStorage.getItem("user-email"));
-    console.log("user-token", token);
-    console.log(localStorage.getItem("userid"));
+   
     try {
       fetch("https://nidhibackend.onrender.com/user/balanceStatus", {
         method: "POST",
@@ -60,14 +61,14 @@ export default function BankStatus() {
           "auth-token": localStorage.getItem("user-auth-token"),
         },
         body: JSON.stringify({
-          email: localStorage.getItem("user-email"),
+          "userId": localStorage.getItem("userid"),
         }),
       })
         .then((Response) => Response.json())
         .then((data) => {
           setbalanceStaus(data);
 
-          console.log(balanceStaus);
+          
         });
     } catch (error) {
       console.log("Error :", error);
@@ -87,7 +88,7 @@ export default function BankStatus() {
         .then((Response) => Response.json())
         .then((data) => {
           setTransaction(data);
-          console.log("trans", data);
+          
         });
     } catch (error) {
       console.log("Error :", error);
@@ -264,7 +265,7 @@ export default function BankStatus() {
                 <div className="dropdown-menu ">
                   <ul className="sub-menu p-0">
                     <li className="menu-item">
-                      <Link to="/userdetail" className="menu-link">
+                      <Link to="/forgotpassword" className="menu-link">
                         <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
                         <div data-i18n="Account">Reset Password</div>
                       </Link>
@@ -523,7 +524,7 @@ export default function BankStatus() {
                     </a>
                     <ul className="dropdown-menu dropdown-menu-right">
                       <li>
-                        <a className="dropdown-item" href="/\">
+                        <Link className="dropdown-item" to="/user">
                           <div className="d-flex">
                             <div className="flex-shrink-0 me-3">
                               <div className="avatar avatar-online">
@@ -541,7 +542,7 @@ export default function BankStatus() {
                               <small className="text-muted"></small>
                             </div>
                           </div>
-                        </a>
+                        </Link>
                       </li>
                       <li>
                         <div className="dropdown-divider"></div>
@@ -644,7 +645,7 @@ export default function BankStatus() {
                               </div>
                             </div>
                             <span className="fw-semibold d-block mb-1">
-                              Authorised balance
+                              Authorised Balance
                             </span>
                             <h3 className="card-title mb-2">
                               {balanceStaus.allotedAmt}
@@ -783,25 +784,19 @@ export default function BankStatus() {
                                   >
                                     <i className="bx bx-dots-vertical-rounded"></i>
                                   </button>
-                                  <div
-                                    className="dropdown-menu dropdown-menu-end"
-                                    aria-labelledby="cardOpt4"
-                                  >
-                                    <a className="dropdown-item" href="/">
-                                      View More
-                                    </a>
-                                    <a className="dropdown-item" href="/">
-                                      Delete
-                                    </a>
-                                  </div>
+                                  
                                 </div>
                               </div>
                               <span className="fw-semibold d-block mb-1">
-                                Available to Withdraw
+                                withdrawal
                               </span>
                               <h3 className="card-title text-nowrap mb-2">
                                 {balanceStaus.availToWithdraw}
                               </h3>
+                            <button className="btn-sm btn-primary text-center"
+                              
+                              > withdraw
+                              </button>
                             </div>
                           </div>
                         </a>
@@ -828,21 +823,11 @@ export default function BankStatus() {
                                 >
                                   <i className="bx bx-dots-vertical-rounded"></i>
                                 </button>
-                                <div
-                                  className="dropdown-menu"
-                                  aria-labelledby="cardOpt1"
-                                >
-                                  <a className="dropdown-item" href="/">
-                                    View More
-                                  </a>
-                                  <a className="dropdown-item" href="/">
-                                    Delete
-                                  </a>
-                                </div>
+                                
                               </div>
                             </div>
                             <span className="fw-semibold d-block mb-1">
-                              Disbursed Amount
+                             Total Disbursed Amount
                             </span>
                             <h3 className="card-title mb-2">
                               {balanceStaus.disburseAmt}

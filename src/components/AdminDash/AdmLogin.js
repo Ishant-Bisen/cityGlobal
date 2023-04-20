@@ -9,7 +9,7 @@ const navigate = useNavigate()
 async function login(e){
 
         e.preventDefault()
-        console.log(email  ,password);
+        
         fetch('https://nidhibackend.onrender.com/admin/login', {
             method: 'POST',
             headers: {
@@ -107,8 +107,10 @@ async function login(e){
                                 <p className="mb-4">Log in to Your Account - Use Your Credentials</p>
 
                                 <form action="admin-dashboard.html" id="formAuthentication" className="mb-3">
-                                    <div className="mb-3">
+                                    <div className="mb-3 form-password-toggle">
+                                    <div className="d-flex justify-content-between">
                                         <label for="email" className="form-label">Email Address</label>
+                                        </div>
                                         <input
                                             type="text"
                                             className="form-control"
@@ -117,6 +119,7 @@ async function login(e){
                                             placeholder="Enter your Email"
                                             onChange={((e) => setemail(e.target.value))}
                                             autofocus/>
+                                        
                                     </div>
                                     <div className="mb-3 form-password-toggle">
                                         <div className="d-flex justify-content-between">

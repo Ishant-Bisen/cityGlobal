@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link ,Navigate, useNavigate } from "react-router-dom";
 
 export default function WithdrawDetails() {
   const [checkbutton, setcheckbutton] = useState([]);
   const [allwithdraw, setallwithdraw] = useState([]);
-
+  const navigate = useNavigate()
   const handellogout = () => {
     localStorage.removeItem("auth-token");
   };
   async function withdrawreq(userid) {
     // Receive email as parameter
     try {
-      console.log(userid);
+      
       const response = await fetch(
         "https://nidhibackend.onrender.com/admin/handleWithdrawRequest",
         {
@@ -20,12 +20,16 @@ export default function WithdrawDetails() {
             "Content-Type": "application/json",
             "auth-token": localStorage.getItem("auth-token"),
           },
-          body: JSON.stringify({ userId: userid }),
+          body: JSON.stringify({
+            "userId" : userid 
+          }),
         }
       );
       const data = await response.json();
-
-      console.log(data);
+      if(!data.error){
+        alert("Request Processed")
+      }
+      
 
       setcheckbutton(data);
     } catch (error) {
@@ -34,26 +38,35 @@ export default function WithdrawDetails() {
   }
 
   useEffect(() => {
-    // Receive email as parameter
-    try {
-      const response = fetch(
-        "https://nidhibackend.onrender.com/admin/getAllRequests",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "auth-token": localStorage.getItem("auth-token"),
-          },
-        }
-      );
-      const data = response.json();
-      setallwithdraw(data);
-    } catch (error) {
-      console.log("Error:", error);
+    console.log("running");
+    if(!localStorage.getItem("auth-token")){
+      navigate("/")
     }
+    
+    const fetchData = async () => {
+        const response = await fetch(
+            "https://nidhibackend.onrender.com/admin/getAllRequests",
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "auth-token": localStorage.getItem("auth-token"),
+                },
+            }
+        );
 
-    // Run the effect only once when the component mounts
-  }, []);
+        if (response.status === 200) {
+            const data = await response.text();
+            const jsonData = JSON.parse(data);
+            setallwithdraw(jsonData);
+            
+        } else {
+            console.error("Failed to retrieve data from server");
+        }
+    };
+
+    fetchData();
+}, []);
 
   return (
     <div>

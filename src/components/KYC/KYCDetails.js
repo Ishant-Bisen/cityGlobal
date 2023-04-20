@@ -29,7 +29,7 @@ export default function KYCDetails() {
         .then((data) => {
           setdetails(data);
 
-          console.log(data);
+      
         });
     } catch (error) {
       console.log("Error :", error);

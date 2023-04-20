@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 export default function AdminServer() {
   const [isEditing, setIsEditing] = useState(false);
@@ -15,14 +15,33 @@ export default function AdminServer() {
   const [text2, setText2] = useState("Enter text here");
   const [checkbutton, setcheckbutton] = useState([]);
   const [allwithdraw, setallwithdraw] = useState([])
-
+  const [balancestatus, setbalancestatus] = useState([])
   const handellogout = () => {
     localStorage.removeItem("auth-token");
   };
-
+  const navigate = useNavigate()
   function handleEdit() {
     setIsEditing(true);
     setColor({ backgroundColor: "#dddbdb" });
+  }
+
+  async function balance(email){
+    fetch("https://nidhibackend.onrender.com/admin/balanceStatus", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem("user-auth-token"),
+      },
+      body: JSON.stringify({
+        "email" : email
+      }),
+    })
+      .then((Response) => Response.json())
+      .then((data) => {
+        setbalancestatus(data);
+
+        
+      });
   }
 
   async function handleEndEditing(email) {
@@ -61,7 +80,7 @@ export default function AdminServer() {
   }
 
   async function handleEndEditing2(email) {
-    console.log(email, value2);
+    
     if (isNaN(value2)) {
       alert(`${value2} is not numeric`);
     } else {
@@ -110,7 +129,7 @@ export default function AdminServer() {
   async function block(email) {
     // Receive email as parameter
 
-    console.log("block" + email);
+    
     try {
       const response = await fetch(
         "https://nidhibackend.onrender.com/admin/blockUser",
@@ -126,16 +145,16 @@ export default function AdminServer() {
         }
       );
       const data = await response.json();
-      console.log(data);
+      
       alert("User has been Blocked");
     } catch (error) {
       console.error("Error:", error);
     }
   }
-  async function getbeneficiary(userid) {
+  async function getbeneficiary(email) {
     // Receive email as parameter
 
-    console.log("beneemail" + userid);
+    
     try {
       const response = await fetch(
         "https://nidhibackend.onrender.com/admin/getBeneficiaries",
@@ -146,13 +165,13 @@ export default function AdminServer() {
             "auth-token": localStorage.getItem("auth-token"),
           },
           body: JSON.stringify({
-            "userId": userid ,
+            "email": email ,
           }),
         }
       );
       const data = await response.json();
-      console.log("bene" ,data);
-      const data2 = data.slice(0,1)
+      
+      const data2 = data
       setbenelists(data2);
     } catch (error) {
       console.error("Error:", error);
@@ -162,7 +181,7 @@ export default function AdminServer() {
   async function withdrawreq(userid) {
     // Receive email as parameter
     try {
-      console.log(userid);
+      
       const response = await fetch(
         "https://nidhibackend.onrender.com/admin/handleWithdrawRequest",
         {
@@ -172,13 +191,15 @@ export default function AdminServer() {
             "auth-token": localStorage.getItem("auth-token"),
           },
           body: JSON.stringify({
-            userId: userid,
+            "userId" : userid 
           }),
         }
       );
       const data = await response.json();
-
-      console.log(data);
+      if(!data.error){
+        alert("Request Processed")
+      }
+      
 
       setcheckbutton(data);
     } catch (error) {
@@ -188,6 +209,9 @@ export default function AdminServer() {
 
   useEffect(() => {
     async function runfxn() {
+      if(!localStorage.getItem("auth-token")){
+        navigate("/")
+      }
       try {
         const response = await fetch(
           "https://nidhibackend.onrender.com/admin/getAll",
@@ -204,7 +228,7 @@ export default function AdminServer() {
         setgetAll(data);
 
         data.forEach((item) => {
-          console.log(item);
+          
           bankdetails(item.email);
           AllWithdrawRequest(item._id, item.email, item.username);
         });
@@ -246,7 +270,7 @@ export default function AdminServer() {
     async function AllWithdrawRequest(userid, email, username) {
       // Receive email as parameter
       try {
-        console.log(userid);
+      
         const response = await fetch(
           "https://nidhibackend.onrender.com/admin/getAllRequests",
           {
@@ -261,7 +285,7 @@ export default function AdminServer() {
         setallwithdraw(data)
         
 
-        console.log("req", withdraw);
+        
       } catch (error) {
         console.log("Error:", error);
       }
@@ -270,7 +294,7 @@ export default function AdminServer() {
     // Run the effect only once when the component mounts
     runfxn();
 
-    console.log(bankDetail);
+    
   }, []);
 
   // Use a separate effect to update the email state when bankDetail changes
@@ -875,6 +899,7 @@ export default function AdminServer() {
                                       data-target={
                                         `#exampleModal3` + item.username
                                       }
+                                      onClick={() => balance(item.email)}
                                     >
                                       Status
                                     </button>
@@ -930,10 +955,10 @@ export default function AdminServer() {
                                                 style={Color2}
                                                 onInput={handleChange2}
                                               >
-                                                {item.allotedAmt ? (
-                                                  <>{item.allotedAmt}</>
+                                                {balancestatus.allotedAmt ? (
+                                                  <>{balancestatus.allotedAmt}</>
                                                 ) : (
-                                                  <> {text2} </>
+                                                  <> {"0"} </>
                                                 )}
                                               </p>
                                               {isEditing2 ? (
@@ -973,10 +998,10 @@ export default function AdminServer() {
                                                 onInput={handleChange}
                                                 class="form-control border-0 shadow-none"
                                               >
-                                                {item.lockedAmt ? (
-                                                  <> {item.lockedAmt} </>
+                                                {balancestatus.lockedAmt ? (
+                                                  <> {balancestatus.lockedAmt} </>
                                                 ) : (
-                                                  <> {text}</>
+                                                  <> 0 </>
                                                 )}
                                               </p>
                                               {isEditing ? (
@@ -1010,7 +1035,7 @@ export default function AdminServer() {
                                               Available to Withdraw
                                             </label>
                                             <p class="form-control border-0 shadow-none">
-                                              {text}
+                                            {balancestatus.available ? (balancestatus.available) : "0"}
                                             </p>
                                           </div>
                                           <div className="mb-3 col-md-6">
@@ -1021,7 +1046,7 @@ export default function AdminServer() {
                                               Disbursed Amount
                                             </label>
                                             <p class="form-control border-0 shadow-none">
-                                              {text}
+                                              {balancestatus.disburseAmt}
                                             </p>
                                           </div>
                                           </div>
@@ -1054,7 +1079,7 @@ export default function AdminServer() {
                                       data-target={
                                         `#exampleModal4` + item.username
                                       }
-                                      onClick={() => getbeneficiary(item._id)}
+                                      onClick={() => getbeneficiary(item.email)}
                                     >
                                       Beneficiaries
                                     </button>
@@ -1106,29 +1131,31 @@ export default function AdminServer() {
                                                   </tr>
                                                 </thead>
                                                 <tbody className="table-border-bottom-0">
+                                                  {benelists.error?  <h3>"No Beneficiaries Added"</h3> : benelists?.map((item , index) =>
                                                   <tr className="table-info">
                                                     <td>
                                                       <i className="fab fa-sketch fa-lg text-warning me-3"></i>
                                                       <strong>
-                                                        21/01/2023
+                                                        {index+1}
                                                       </strong>
                                                     </td>
                                                     <td>
                                                       {
-                                                        benelists.BeneficiaryName
+                                                        item.BeneficiaryName
                                                       }
                                                     </td>
                                                     <td>
                                                       <strong>
-                                                        {benelists.AccountNo}
+                                                        {item.AccountNo}
                                                       </strong>
                                                     </td>
                                                     <td>
                                                       <strong>
-                                                        {benelists.BankName}
+                                                      {item.BankName}
                                                       </strong>
                                                     </td>
                                                   </tr>
+                                                )}
                                                 </tbody>
                                               </table>
                                             </div>

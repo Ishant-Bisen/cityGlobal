@@ -654,6 +654,7 @@ export default function AddBeneficeries() {
                                 placeholder="231465"
                                 maxlength="6"
                               />
+                              <p class="required-message text-danger" > Code must be equal 6 characters</p>
                             </div>
                           </div>
                           {/* <!-- <hr class="my-0" /> --> */}
@@ -726,6 +727,7 @@ export default function AddBeneficeries() {
                                 onChange={(e) => setaccnumber(e.target.value)}
                                 maxlength="16"
                               />
+                              <p class="required-message text-danger" > must be at least 10 characters long</p>
                             </div>
                           </div>
                           <div class="row">

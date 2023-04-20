@@ -1,7 +1,37 @@
 import React from 'react'
+import { useState } from 'react';
 import { Link } from 'react-router-dom'
 
 export default function ForgotPassword(propes) {
+
+    const [input, setinput] = useState("")
+     
+     async function reset(e){
+        e.preventDefault()
+        const response = await fetch(
+            "https://nidhibackend.onrender.com/authenticate/reset",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "auth-token": localStorage.getItem("auth-token"),
+              },
+              body: JSON.stringify({
+                "email": input ,
+              }),
+            }
+          );
+          const data = await response.text();
+          console.log( data);
+          if(data.error){
+            alert(data.error)
+          }else{
+            alert(data)
+          }
+          
+          
+    
+    }
     return (
         <div>
             {/* <!-- Content --> */}
@@ -76,7 +106,7 @@ export default function ForgotPassword(propes) {
                                 <p className="mb-4">
                                     Enter your email and we'll send you instructions to reset your password
                                 </p>
-                                <form id="formAuthentication" className="mb-3" action="dashboard.html">
+                                
                                     <div className="mb-3">
                                         <label for="email" className="form-label">Email</label>
                                         <input
@@ -85,15 +115,16 @@ export default function ForgotPassword(propes) {
                                             id="email"
                                             name="email"
                                             placeholder="Enter your email"
+                                            onChange={(e) => setinput(e.target.value)}
                                             autofocus/>
                                     </div>
-                                    <button className="btn btn-primary d-grid w-100">
+                                    <button className="btn btn-primary d-grid w-100" onClick={(e) => reset(e) }>
                                         Send Reset Link
                                     </button>
-                                </form>
+                                
                                 <div className="text-center">
                                     <Link
-                                        to="/login"
+                                        to="/signin"
                                         className="d-flex align-items-center justify-content-center">
                                         <i className="bx bx-chevron-left scaleX-n1-rtl bx-sm"></i>
                                         Back to login

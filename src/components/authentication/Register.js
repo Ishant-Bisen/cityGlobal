@@ -37,7 +37,7 @@ export default function Register(propes) {
             localStorage.setItem("auth-token", data.token )
             console.log("registered succesfully")
            if(data.token){
-            navigate('/signin')
+            navigate('/user')
            }else{
             alert("already exist or Invalid Inputs")
            }
@@ -63,7 +63,7 @@ export default function Register(propes) {
                             <div className="card-body">
                                 {/* <!-- Logo --> */}
                                 <div className="app-brand justify-content-center">
-                                    <a href="../index.html" className="app-brand-link gap-2">
+                                    <Link to="/" className="app-brand-link gap-2">
                                         <span className="app-brand-logo demo">
                                             <svg width="25" viewBox="0 0 25 42" version="1.1">
                                                 <defs>
@@ -114,7 +114,7 @@ export default function Register(propes) {
                                             </svg>
                                         </span>
                                         <span className="app-brand-text demo text-body fw-bolder">CityGlobal</span >
-                                    </a>
+                                    </Link>
                                 </div>
                                 {/* <!-- /Logo --> */}
                                 <h4 className="mb-2">Sign up Your Account 🚀</h4>
@@ -132,8 +132,8 @@ export default function Register(propes) {
                                             name="name"
                                             placeholder="Enter your Name"
                                             onChange={(e) => {setusername(e.target.value)}}
-
-            />
+                                            />   
+                                            <p class="required-message text-danger" >Username Should be 4 characters long</p>  
                                     </div>
                                     <div className="mb-3">
                                     <div className="d-flex justify-content-between">
@@ -156,17 +156,18 @@ export default function Register(propes) {
                                             <input
                                                 type="password"
                                                 id="password"
+                                                
                                                 className="form-control"
                                                 name="password"
                                                 placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
                                                 aria-describedby="password"
                                                 onChange={(e) => {setpassword(e.target.value) 
-                                                console.log("yes")}}
+                                                
+                                                }}
                                                 />
-                                            <span className="input-group-text cursor-pointer">
-                                                <i className="bx bx-hide"></i >
-                                            </span>
+                                            
                                         </div>
+                                        <p class="required-message text-danger" > Password is required and must be at least 5 characters long</p>
                                     </div>
 
                                     <div className="mb-3">
@@ -175,7 +176,7 @@ export default function Register(propes) {
                                     <button className="btn btn-primary d-grid w-100" onClick={(e) => register(e)} >Sign up</button>
                                 </htmlForm>
 
-                                <p className="text-center">
+                                <p className="text-center my-3">
                                     <span>Already have an account?</span>
                                     <Link to="/signin">
                                         <span>Sign in instead</span>

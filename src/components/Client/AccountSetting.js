@@ -29,7 +29,7 @@ export default function AccountSetting() {
         .then((Response) => Response.json())
         .then((data) => {
           setbalanceStaus(data);
-          console.log(balanceStaus);
+          
         });
     } catch (error) {
       console.log("Error :", error);
@@ -208,7 +208,7 @@ export default function AccountSetting() {
                 <div className="dropdown-menu ">
                   <ul className="sub-menu p-0">
                     <li className="menu-item">
-                      <Link to="/userdetail" className="menu-link">
+                      <Link to="/forgotpassword" className="menu-link">
                         <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
                         <div data-i18n="Account">Reset Password</div>
                       </Link>
@@ -467,7 +467,7 @@ export default function AccountSetting() {
                     </a>
                     <ul className="dropdown-menu dropdown-menu-right">
                       <li>
-                        <a className="dropdown-item" href="/\">
+                        <a className="dropdown-item" href="/user">
                           <div className="d-flex">
                             <div className="flex-shrink-0 me-3">
                               <div className="avatar avatar-online">

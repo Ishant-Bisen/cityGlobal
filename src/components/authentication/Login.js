@@ -29,8 +29,7 @@ export default function Login() {
             localStorage.setItem("user-auth-token", data.token )
             localStorage.setItem("user-name" , data.username )
             localStorage.setItem("userid" ,data.userId)
-            console.log("token" ,data);
-            console.log("email" , data.Email);
+           
             console.log("registered succesfully")
             if(data.token){
                   navigate('/user')

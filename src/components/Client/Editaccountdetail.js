@@ -1,20 +1,47 @@
-import React, { useState } from 'react'
+import React, { useState ,useEffect } from 'react'
 
 import {Link , useNavigate} from 'react-router-dom'
 
 
 export default function Editaccountdetail() {
+  const [details, setdetails] = useState("")
+  useEffect ( () => {
+    async function detailsfetch(){
+      
+      
+
+       const Response = await fetch("https://nidhibackend.onrender.com/user/getBankDetails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("user-auth-token"),
+        },
+        body: JSON.stringify({
+          userId: localStorage.getItem("userid"),
+        }),
+      });
+        const data = await Response.json()
+        setdetails(data);
+        
+          
+          
+        
+    } 
+    
+    detailsfetch();
+  }, []);
    const [name, setname] = useState("");
-   const [email, setemail] = useState("");
+   const [email, setemail] = useState(localStorage.getItem("user-email"));
+   const [ifsc, setifsc] = useState("");
    const [number, setnumber] = useState("");
    const [accnumber, setaccnumber] = useState("");
    const [zipcode, setzipcode] = useState("");
    const [state, setstate] = useState("");
    const [adress, setadress] = useState("");
    const [actype, setacttype] = useState("");
-   const [ifsc, setifsc] = useState("");
    const [bank, setbank] = useState("");
    const [branch, setbranch] = useState("")
+   
    const navigate = useNavigate()
    const handellogout = () => {
     localStorage.removeItem("userid");
@@ -23,6 +50,8 @@ export default function Editaccountdetail() {
     localStorage.removeItem("user-name");
     console.log("all remove");
   };
+
+ 
 
     async function addDetails(e){
 
@@ -51,13 +80,14 @@ export default function Editaccountdetail() {
           .then(response => response.json())
           .then(data => {
             console.log("registered succesfully")
-            if(data === "registered succesfully"){
-                  console.log(data);
-                  alert("Details Added Succesfully")
-                  navigate("/user")
-            }else{
+            
+                  
+            if(data.error){
                 alert("Unsuccessful")
-                console.log(data)
+                
+            }else{
+                  alert(data)
+                  navigate("/user")
             }
         })
           .catch(error => {
@@ -65,7 +95,41 @@ export default function Editaccountdetail() {
               alert("incorrect input");
           });
     }
+    
 
+    async function Delete(e){
+
+      e.preventDefault()
+      
+      fetch('https://nidhibackend.onrender.com/user/deleteUser', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'auth-token' : localStorage.getItem("user-auth-token")
+          },
+          body: JSON.stringify({
+               "userId" : localStorage.getItem("userid"),
+                   
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log("succesfully")
+          if(data.error){
+                console.log(data);
+                alert("Sorry!! Try Again Account Not Deleted")
+                
+          }else{
+              
+              alert("successful")
+              navigate("/signin")
+          }
+      })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("incorrect input");
+        });
+  }
     return (
         <div>
             <div className="layout-wrapper layout-content-navbar">
@@ -239,7 +303,7 @@ export default function Editaccountdetail() {
                 <div className="dropdown-menu ">
                   <ul className="sub-menu p-0">
                     <li className="menu-item">
-                      <Link to="/userdetail" className="menu-link">
+                      <Link to="/forgotpassword" className="menu-link">
                         <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
                         <div data-i18n="Account">Reset Password</div>
                       </Link>
@@ -498,7 +562,7 @@ export default function Editaccountdetail() {
                     </a>
                     <ul className="dropdown-menu dropdown-menu-right">
                       <li>
-                        <a className="dropdown-item" href="/\">
+                        <a className="dropdown-item" href="/user">
                           <div className="d-flex">
                             <div className="flex-shrink-0 me-3">
                               <div className="avatar avatar-online">
@@ -568,7 +632,7 @@ export default function Editaccountdetail() {
                                             </li>
                                             <li class="nav-item">
                                                 <Link class="nav-link active" to="/editaccountdetail">
-                                                    <i class="bx bx-bell me-1"></i>
+                                                
                                                     Edit Accounts Details</Link>
                                             </li>
                                         </ul>
@@ -585,26 +649,10 @@ export default function Editaccountdetail() {
                                                         width="100"
                                                         id="uploadedAvatar"/>
                                                     <div class="button-wrapper">
-                                                        <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
-                                                            <span class="d-none d-sm-block">Upload new photo</span >
-                                                            <i class="bx bx-upload d-block d-sm-none"></i>
-                                                            <input
-                                                                type="file"
-                                                                id="upload"
-                                                                class="account-file-input"
-                                                                hidden
-                                                                accept="image/png, image/jpeg"/>
-                                                        </label>
-                                                        <button
-                                                            type="button"
-                                                            class="btn btn-outline-secondary account-image-reset mb-4">
-                                                            <i class="bx bx-reset d-block d-sm-none"></i>
-                                                            <span class="d-none d-sm-block">Reset</span>
-                                                        </button>
+                                                       
+                                                        
 
-                                                        <p class="text-muted mb-0">
-                                                            Allowed JPG, GIF or PNG. Max size of 800K
-                                                        </p>
+                                                        
                                                     </div>
                                                 </div>
                                             </div>
@@ -619,7 +667,7 @@ export default function Editaccountdetail() {
                                                                 type="text"
                                                                 id="firstName"
                                                                 name="firstName"
-                                                                placeholder='John'
+                                                                
                                                                 onChange={(e) => setname(e.target.value)}
 
                                                                 autofocus/>
@@ -631,7 +679,7 @@ export default function Editaccountdetail() {
                                                                 type="text"
                                                                 id="Branch Name"
                                                                 name="Branch Name"
-                                                                placeholder='Branch'
+                                                                
                                                                 onChange={(e) => setbranch(e.target.value)}
 
                                                                 autofocus/>
@@ -643,7 +691,7 @@ export default function Editaccountdetail() {
                                                                 type="text"
                                                                 id="email"
                                                                 name="email"
-                                                                placeholder="john.doe@example.com"
+                                                                
                                                                 onChange={(e) => setemail(e.target.value)}
                                                                 autoFocus
                                                                 />
@@ -658,7 +706,8 @@ export default function Editaccountdetail() {
                                                                     name="phoneNumber"
                                                                     class="form-control"
                                                                     onChange={(e) => setnumber(e.target.value)}
-                                                                    placeholder="9309861078"/>
+                                                                    
+                                                                  />
                                                             </div>
                                                         </div>
                                                         <div class="mb-3 col-md-6">
@@ -669,7 +718,7 @@ export default function Editaccountdetail() {
                                                                     name="bankName"
                                                                     class="form-control"
                                                                     onChange={(e) => setbank(e.target.value)}
-                                                                    placeholder="Bank"/>
+                                                                    />
                                                         </div>
                                                         <div class="mb-3 col-md-6">
                                                             <label for="zipCode" class="form-label">Account Number</label >
@@ -680,7 +729,9 @@ export default function Editaccountdetail() {
                                                                 name="account number"
                                                                 placeholder="9452 3658 7896 4576"
                                                                 onChange={(e) => setaccnumber(e.target.value)}
+                                                                
                                                                 maxlength="16"/>
+                                                                <p class="required-message text-danger" > Account Nuber must be at least 10 characters long</p>
                                                         </div>
                                                         <div class="mb-3 col-md-6">
                                                             <label for="IFSC" class="form-label">IFSC Code</label >
@@ -690,7 +741,8 @@ export default function Editaccountdetail() {
                                                                 id="IFSC"
                                                                 name="IFSC"
                                                                 onChange={(e) => setifsc(e.target.value)}
-                                                                placeholder="IFSC Code"/>
+                                                                
+                                                                />
                                                         </div>
                                                         <div class="mb-3 col-md-6">
                                                             <label class="form-label" for="country">Account Type</label >
@@ -700,7 +752,7 @@ export default function Editaccountdetail() {
                                                                     name="AccountType"
                                                                     class="form-control"
                                                                     onChange={(e) => setacttype(e.target.value)}
-                                                                    placeholder="Savings/Current"/>
+                                                                    />
                                                         </div>
                                                         <div class="mb-3 col-md-6">
                                                             <label for="address" class="form-label">Address</label >
@@ -710,7 +762,7 @@ export default function Editaccountdetail() {
                                                                 id="address"
                                                                 name="address"
                                                                  onChange={(e) => setadress(e.target.value)}
-                                                                placeholder="Address"/>
+                                                                />
                                                         </div>
                                                         <div class="mb-3 col-md-6">
                                                             <label for="language" class="form-label">State</label >
@@ -720,7 +772,7 @@ export default function Editaccountdetail() {
                                                                     name="state"
                                                                     class="form-control"
                                                                     onChange={(e) => setstate(e.target.value)}
-                                                                    placeholder="Gujrat"/>
+                                                                    />
                                                         </div>
                                                         <div class="mb-3 col-md-6">
                                                             <label for="zipCode" class="form-label">Zip Code</label >
@@ -729,9 +781,11 @@ export default function Editaccountdetail() {
                                                                 class="form-control"
                                                                 id="zipCode"
                                                                 name="zipCode"
-                                                                placeholder="231465"
+                                                                
+                                                        
                                                                 onChange={(e) => setzipcode(e.target.value)}
                                                                 />
+                                                                <p class="required-message text-danger" > Code must be 6 characters long</p>
                                                         </div>
                                                     </div>
                                                     <div class="mt-2">
@@ -761,19 +815,15 @@ export default function Editaccountdetail() {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <form id="formAccountDeactivation" onsubmit="return false">
+                                                
                                                     <div class="form-check mb-3">
-                                                        <input
-                                                            class="form-check-input"
-                                                            type="checkbox"
-                                                            name="accountActivation"
-                                                            id="accountActivation"/>
-                                                        <label class="form-check-label" for="accountActivation">I confirm my account deactivation</label >
+                                                       
+                                                        
                                                     </div>
-                                                    <button type="submit" class="btn btn-danger deactivate-account">
+                                                    <button type="submit" class="btn btn-danger deactivate-account" onClick={(e) =>(Delete(e)) }>
                                                         Deactivate Account
                                                     </button>
-                                                </form>
+                                              
                                             </div>
                                         </div>
                                     </div>

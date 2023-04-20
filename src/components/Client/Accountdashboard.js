@@ -213,7 +213,7 @@ export default function Accountdashboard() {
                 <div className="dropdown-menu ">
                   <ul className="sub-menu p-0">
                     <li className="menu-item">
-                      <Link to="/userdetail" className="menu-link">
+                      <Link to="/forgotpassword" className="menu-link">
                         <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
                         <div data-i18n="Account">Reset Password</div>
                       </Link>
@@ -472,7 +472,7 @@ export default function Accountdashboard() {
                     </a>
                     <ul className="dropdown-menu dropdown-menu-right">
                       <li>
-                        <a className="dropdown-item" href="/\">
+                        <a className="dropdown-item" href="/user">
                           <div className="d-flex">
                             <div className="flex-shrink-0 me-3">
                               <div className="avatar avatar-online">
@@ -544,7 +544,7 @@ export default function Accountdashboard() {
                       </li>
                       <li class="nav-item">
                         <Link class="nav-link" to="/editaccountdetail">
-                          <i class="bx bx-bell me-1"></i>
+                          
                           Edit Account Details
                         </Link>
                       </li>
